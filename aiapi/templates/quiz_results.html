@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Evaluation Summary</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 750px; margin: 40px auto; padding: 20px; }
+        .hero-banner { background: #f1f5f9; padding: 30px; text-align: center; border-radius: 8px; margin-bottom: 40px; }
+        .score-num { font-size: 54px; margin: 10px 0; font-weight: 800; color: #1e293b; }
+        .card { padding: 25px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .pass-border { border-left: 6px solid #16a34a; background: #f0fdf4; }
+        .fail-border { border-left: 6px solid #dc2626; background: #fef2f2; }
+        .status-pill { display: inline-block; padding: 4px 10px; font-size: 12px; font-weight: bold; border-radius: 12px; color: white; text-transform: uppercase; margin-bottom: 12px; }
+        .bg-pass { background: #16a34a; }
+        .bg-fail { background: #dc2626; }
+        .explanation-block { margin-top: 15px; padding: 15px; background: white; border: 1px dotted #cbd5e1; border-radius: 4px; font-style: italic; }
+        .home-link { display: inline-block; margin-top: 20px; padding: 12px 24px; background: #2563eb; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="hero-banner">
+        <h2>Quiz Summary: {{ topic }}</h2>
+        <div class="score-num">{{ score }} / {{ total_questions }}</div>
+        <p>Overall Rating: <strong>{{ percentage }}%</strong></p>
+    </div>
+
+    <h2>Detailed Analysis:</h2>
+
+    {% for r in results %}
+        <div class="card {% if r.is_correct %}pass-border{% else %}fail-border{% endif %}">
+            {% if r.is_correct %}
+                <span class="status-pill bg-pass">Correct</span>
+            {% else %}
+                <span class="status-pill bg-fail">Incorrect</span>
+            {% endif %}
+
+            <h3>Question {{ forloop.counter }}: {{ r.question_text }}</h3>
+            
+            <p><strong>Your Submission:</strong> {{ r.user_answer }}</p>
+            <p><strong>Valid Target:</strong> {{ r.correct_answer }}</p>
+
+            <div class="explanation-block">
+                <strong>Gemini Contextual Breakdown:</strong> {{ r.explanation }}
+            </div>
+        </div>
+    {% endfor %}
+
+    <a href="{% url 'generate_quiz' %}" class="home-link">Generate New Quiz</a>
+
+</body>
+</html>

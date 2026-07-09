@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Match: {{ topic }}</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 750px; margin: 40px auto; padding: 20px; }
+        .timer-card { position: fixed; top: 20px; right: 20px; background: #ef4444; color: white; padding: 15px 20px; font-size: 22px; font-weight: bold; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); z-index: 100; }
+        .q-block { background: #f8fafc; padding: 25px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .opt-row { display: block; margin: 12px 0; padding: 10px; background: white; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; }
+        .opt-row:hover { background: #f1f5f9; }
+        .submit-bar { margin-top: 30px; }
+        .btn-submit { padding: 14px 40px; background: #16a34a; color: white; border: none; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="timer-card">⏳ <span id="clock">--:--</span></div>
+
+    <h1>Topic: {{ topic }}</h1>
+    <p>Keep track of your time. The session terminates automatically when the countdown expires.</p>
+    <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 30px;">
+
+    <form id="active-quiz-form" method="POST" action="{% url 'quiz_results' %}">
+        {% csrf_token %}
+        
+        {% for q in questions %}
+            <div class="q-block">
+                <h3>Question {{ forloop.counter }}: {{ q.question_text }}</h3>
+                <div>
+                    {% for option in q.options %}
+                        <label class="opt-row">
+                            <input type="radio" name="question_{{ forloop.parentloop.counter0 }}" value="{{ option }}">
+                            {{ option }}
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="submit-bar">
+            <button type="submit" class="btn-submit">Submit Assessment</button>
+        </div>
+    </form>
+
+    <script>
+        let duration = parseInt("{{ total_time }}");
+        const display = document.getElementById("clock");
+        const form = document.getElementById("active-quiz-form");
+
+        function startTimer() {
+            let mins = Math.floor(duration / 60);
+            let secs = duration % 60;
+
+            mins = mins < 10 ? "0" + mins : mins;
+            secs = secs < 10 ? "0" + secs : secs;
+
+            display.textContent = mins + ":" + secs;
+
+            if (duration <= 0) {
+                clearInterval(countdown);
+                alert("⏰ Time allocated has run out! Submitting choices automatically.");
+                form.submit();
+            }
+            duration--;
+        }
+
+        startTimer();
+        const countdown = setInterval(startTimer, 1000);
+    </script>
+</body>
+</html>

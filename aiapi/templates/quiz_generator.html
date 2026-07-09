@@ -1,0 +1,57 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <title>AI Quiz Generator</title>
+    
+</head>
+<body>
+
+    <h1>🧠 AI Quiz Generator</h1>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="topic">Subject & Topic:</label>
+            <input type="text" id="topic" name="topic" placeholder="e.g., Python Programming - Dictionaries" required>
+        </div>
+        <div class="form-group">
+            <label for="num_questions">Number of Questions:</label>
+            <input type="number" id="num_questions" name="num_questions" min="1" max="10" value="5" required>
+        </div>
+        <div class="form-group">
+            <label for="difficulty">Difficulty Level (1-10):</label>
+            <input type="number" id="difficulty" name="difficulty" min="1" max="10" value="5" required>
+        </div>
+        <button type="submit">Generate Quiz</button>
+    </form>
+
+    {% if error %}
+        <p style="color: red;"><strong>{{ error }}</strong></p>
+    {% endif %}
+{%if quiz_data%}
+    {% for q in quiz_data %}
+    <p>{{ q.question_text }}</p>
+    <ul>
+        {% for option in q.options %}
+            <li>{{ option }}</li>
+        {% endfor %}
+    </ul>
+    <p><strong>Answer:</strong> {{ q.correct_answer }}</p>
+    <p><em>{{ q.explanation }}</em></p>
+
+
+                <button type="button" class="reveal-btn" onclick="document.getElementById('answer_{{ forloop.counter }}').style.display='block'">Reveal Answer</button>
+                
+                <div id="answer_{{ forloop.counter }}" class="answer-box">
+                    <strong>Correct Answer:</strong> {{ q.correct_answer }}<br><br>
+                    <em>Explanation:</em> {{ q.explanation }}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+</body>
+</html>
